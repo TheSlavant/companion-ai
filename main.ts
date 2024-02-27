@@ -4,11 +4,13 @@ import OpenAI from "openai";
 // Define the structure of your plugin settings
 interface CompanionPluginSettings {
     apiKey: string; // OpenAI API key
+    userFirstName: string; // User's first name
 }
 
 // Default settings values
 const DEFAULT_SETTINGS: CompanionPluginSettings = {
     apiKey: '', // Empty by default, user must fill this in
+    userFirstName: '' // Empty by default, user must fill this in
 }
 
 // Main plugin class
@@ -22,69 +24,64 @@ export default class CompanionPlugin extends Plugin {
         await this.loadSettings();
 
         // Initialize the OpenAI client with the user-provided API key
-		this.openai = new OpenAI({ apiKey: this.settings.apiKey, dangerouslyAllowBrowser: true });
+        this.openai = new OpenAI({ apiKey: this.settings.apiKey, dangerouslyAllowBrowser: true });
 
-        // Add a ribbon icon on the left sidebar for generating insights
-        // "light-bulb" is the icon, "Generate Insights" is the hover text
-        this.addRibbonIcon('dice', 'Generate insights', async (evt: MouseEvent) => {
+        // Add a ribbon icon on the left sidebar for generating observations
+        this.addRibbonIcon('dice', 'Generate observations', async (evt: MouseEvent) => {
             // Get the currently active file in Obsidian
             const activeFile = this.app.workspace.getActiveFile();
             // If there's no active file, show a notice and exit
             if (!activeFile) {
-                new Notice('Select a file to generate insights.');
+                new Notice('Select a file to generate observations.');
                 return;
             }
 
-			// Read the name and content of the active file
-			const fileName = activeFile.basename;
-			const fileContent = await this.app.vault.read(activeFile);
-            // Proceed to generate insights for any file content
-            const observations = await this.generateInsights(fileContent);
+            // Read the content of the active file
+            const fileContent = await this.app.vault.read(activeFile);
+            // Proceed to generate observations for the file content
+            const observations = await this.generateObservations(fileContent);
 
-			// Create a filename for the observations file based on the current date and selected file
-			// Adjust the date to reflect the user's local date
-			const today = new Date();
-			const localDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-			const observationFileName = `${localDate} observations from '${fileName}'.md`;
+            // Define the observations file name
+            const observationsFileName = "observations.md";
 
-            // Check if the file already exists, update it; if not, create a new one
-            const existingFile = this.app.vault.getAbstractFileByPath(observationFileName);
-            if (existingFile && existingFile instanceof TFile) {
-                await this.app.vault.modify(existingFile, observations);
+            // Check if the observations file already exists
+            let observationsFile = this.app.vault.getAbstractFileByPath(observationsFileName);
+            if (observationsFile && observationsFile instanceof TFile) {
+                // If the file exists, append new observations
+                await this.app.vault.append(observationsFile, observations + "\n"); // Ensure new observations start on a new line
             } else {
-                await this.app.vault.create(observationFileName, observations);
+                // If the file doesn't exist, create it with the new observations
+                await this.app.vault.create(observationsFileName, observations + "\n"); // Start observations on a new line
             }
-            new Notice(`Observations saved into ${observationFileName}`);
+            new Notice(`Observations saved from ${activeFile.basename}`);
         });
 
         // Add a settings tab so the user can configure the plugin
         this.addSettingTab(new CompanionPluginSettingTab(this.app, this));
     }
 
-    // Function to generate insights using OpenAI based on the content of the current file
-    async generateInsights(content: string): Promise<string> {
+    // Function to generate observations using OpenAI based on the content of the current file
+    async generateObservations(content: string): Promise<string> {
         try {
-            // Use the OpenAI API to generate insights
+            // Use the OpenAI API to generate observations
             const completion = await this.openai.chat.completions.create({
                 model: "gpt-4-0125-preview",
                 messages: [
-                    { "role": "system", "content": "Generate factual observations about the user and his life from this text. The user's name is Yaroslav. Only return the observations, nothing else. For example: 'Yaroslav wrote that for the next 5 years, he will build technology for makers.', 'Yaroslav reflected that in a few hundred years language models from 2024 will sound like Geoffrey Chaucer.'" },
+                    { "role": "system", "content": `Generate factual observations about the user from this text. The user's name is ${this.settings.userFirstName}. Only return the observations, nothing else. For example: '{name} mentioned liking green apples.', '{name} reflected that in a few hundred years LLMs from 2024 will sound funny.'`},
                     { "role": "user", "content": content }
                 ],
             });
-            // Return the generated insights
-            return completion.choices[0].message.content || 'No insights generated.';
+            // Return the generated observations
+            return completion.choices[0].message.content || 'No observations generated.';
         } catch (error) {
             // Log and return an error message if the API call fails
-            console.error('Error generating insights:', error);
-            return 'Error generating insights.';
+            console.error('Error generating observations:', error);
+            return 'Error generating observations.';
         }
     }
 
     // Placeholder for cleanup tasks when the plugin is unloaded
-    onunload() {
-
-    }
+    onunload() {}
 
     // Load the user's settings from disk
     async loadSettings() {
@@ -115,8 +112,8 @@ class CompanionPluginSettingTab extends PluginSettingTab {
 
         // Create a new setting for the OpenAI API key
         new Setting(containerEl)
-            .setName('OpenAI API Key')
-            .setDesc('Enter your OpenAI API Key.')
+            .setName('OpenAI API key')
+            .setDesc('Enter your OpenAI API key.')
             .addText(text => text
                 .setPlaceholder('API Key')
                 .setValue(this.plugin.settings.apiKey)
@@ -125,5 +122,18 @@ class CompanionPluginSettingTab extends PluginSettingTab {
                     this.plugin.settings.apiKey = value;
                     await this.plugin.saveSettings();
                 }));
+        
+                // Create a new setting for the user's first name
+        new Setting(containerEl)
+        .setName('User\'s first name')
+        .setDesc('Enter your first name.')
+        .addText(text => text
+            .setPlaceholder('First name')
+            .setValue(this.plugin.settings.userFirstName)
+            .onChange(async (value) => {
+                // Update the user's first name in the plugin settings when the user changes it
+                this.plugin.settings.userFirstName = value;
+                await this.plugin.saveSettings();
+            }));
     }
 }
