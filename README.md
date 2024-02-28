@@ -57,4 +57,4 @@ We welcome contributions to Companion! We will be happy if you report bugs, sugg
 
 ## License
 
-The Companion Plugin is released under Apache 2.0, ensuring it's free to use and distribute.
+The Companion plugin is released under Apache 2.0, ensuring it's free to use and distribute.
