@@ -29,18 +29,18 @@ Upon installation, configure the plugin to ensure it functions correctly:
 
 ### Generating Observations
 
-- Click on the ribbon icon labeled "Companion observe" to generate observations for the active note.
-- The observations will be saved in a dedicated `observations.md` file, which can be reviewed or edited at any time.
+- Open the note you want to show to your Companion. Click on the ribbon icon labeled "Companion observe" to generate observations for the note.
+- The observations will be saved in a dedicated `observations.md` file. You can view and edit them whenever you want.
 
 ### Interactive Chat
 
-- Click on the ribbon icon labeled "Chat with Companion" to open the chat interface.
+- Click on the ribbon icon labeled "Chat with Companion". If your right side bar is not open, click the "toggle right side bar" button at the top right. Click on the icon in the top right that says "Chat with Companion". You're good to go!
 - In the chat interface, you can type messages or questions related to your notes, and the Companion will respond with insights or clarifications.
+- To end the chat, right-click on the icon in the top right that says "Chat with Companion" and select "Close".
 
 ### Managing Observations and Embeddings
 
-- The plugin automatically manages observation embeddings, enhancing the plugin's ability to provide relevant responses and insights.
-- You can view and edit the `observation_embeddings.json` file if needed, although it is primarily used by the plugin internally.
+- The plugin automatically manages observation embeddings. You can view and edit the `observation_embeddings.json` file if needed, although it is primarily used by the plugin internally.
 
 ## The Nitty-Gritty
 
