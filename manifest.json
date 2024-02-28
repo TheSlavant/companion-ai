@@ -1,9 +1,9 @@
 {
 	"id": "companion-plugin",
-	"name": "Companion Plugin",
+	"name": "Companion AI",
 	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "Reads your notes and generates insights.",
+	"description": "AI chatbot that learns about you from your notes.",
 	"author": "Yaroslav Shipilov",
 	"authorUrl": "https://theslavant.com",
 	"fundingUrl": "",
