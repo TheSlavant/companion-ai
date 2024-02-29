@@ -286,29 +286,23 @@ class ChatInterfaceView extends ItemView {
     display() {
         // Clear existing content
         this.containerEl.empty();
-
-        // Ensure the container takes up full height
-        this.containerEl.style.height = 'calc(100% - 75px)'; // Make sure the container takes full height
-
+        
+        // Ensure the interface takes up full height
+        this.containerEl.classList.add('full-height');
+        
         // Create chat container
-        const chatContainer = this.containerEl.createDiv({ cls: 'chat-container' });
-        chatContainer.style.height = 'calc(100% - 50px)'; // Adjust height to take full height minus input area
-        chatContainer.style.overflowY = 'auto';
-        chatContainer.style.border = '1px solid silver';
-        chatContainer.style.padding = '10px';
-        chatContainer.style.marginBottom = '10px';
-
+        const chatContainer = this.containerEl.createDiv();
+        chatContainer.classList.add('chat-container');
+        
         // Create input box
         const inputBox = this.containerEl.createEl('input');
-        inputBox.type = 'text';
+        inputBox.classList.add('input-box');
         inputBox.placeholder = 'Type your message...';
-        inputBox.style.width = '100%';
-        inputBox.style.marginTop = '10px'; // Ensure there's a little space above the input box
 
         // Create send button
         const sendButton = this.containerEl.createEl('button');
+        sendButton.classList.add('send-button');
         sendButton.textContent = 'Send';
-        sendButton.style.marginTop = '10px';
 
         // Handle send action
         sendButton.onclick = async () => {

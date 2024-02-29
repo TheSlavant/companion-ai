@@ -1,8 +1,22 @@
-/*
+/* Chat Interface Styles */
+.chat-container {
+    height: calc(100% - 50px);
+    overflow-y: auto;
+    border: 1px solid silver;
+    padding: 10px;
+    margin-bottom: 10px;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.full-height {
+height: calc(100% - 75px);
+}
 
-If your plugin does not need CSS, delete this file.
+.input-box {
+width: 100%;
+margin-top: 10px;
+}
 
-*/
+.send-button {
+margin-top: 10px;
+}
+  
